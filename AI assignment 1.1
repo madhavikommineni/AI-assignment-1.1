@@ -1,0 +1,30 @@
+import random
+import time
+class TemperatureControlAgent:
+    def __init__(self, min_temp=20, max_temp=24):
+        self.min_temp = min_temp
+        self.max_temp = max_temp
+        self.current_temp = random.randint(15, 30)  
+    def sense_temp(self):
+        return self.current_temp
+    def decide_act(self, tempe):
+        if tempe < self.min_temp:  
+            return "Turn on heating"
+        elif tempe > self.max_temp:
+            return "Turn on cooling"
+        else:
+            return "Do nothing"
+    def act(self, act):
+        if act == "Turn on heating":
+            self.current_temp += 1
+        elif act == "Turn on cooling":
+            self.current_temp -= 1  
+    def run(self, it=10):
+        for _ in range(it):
+            temp = self.sense_temp()  
+            action = self.decide_act(temp)  
+            print(f"Current Temperature: {temp}°C | Action: {action}")
+            self.act(action)
+            time.sleep(1)  
+agent = TemperatureControlAgent()
+agent.run()

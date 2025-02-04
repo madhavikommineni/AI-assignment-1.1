@@ -1,0 +1,63 @@
+import random
+import time
+
+class StockInvestmentAdvisor:
+    def __init__(self, initial_balance=10000):
+        self.balance = initial_balance
+        self.portfolio = {}
+        self.stock_history = {
+            "Apple": [150, 153, 157, 160, 162, 168, 170],
+            "Google": [2700, 2720, 2750, 2770, 2790, 2850, 2900]
+        }
+
+    def get_price(self, stock, day):
+        return self.stock_history.get(stock, [])[day]
+
+    def buy(self, stock, quantity, day):
+        price = self.get_price(stock, day)
+        if price and self.balance >= price * quantity:
+            self.balance -= price * quantity
+            self.portfolio[stock] = self.portfolio.get(stock, 0) + quantity
+            print(f"Bought {quantity} {stock} shares.")
+        else:
+            print(f"Not enough funds to buy {quantity} shares of {stock}.")
+
+    def sell(self, stock, quantity, day):
+        price = self.get_price(stock, day)
+        if stock in self.portfolio and self.portfolio[stock] >= quantity:
+            self.balance += price * quantity
+            self.portfolio[stock] -= quantity
+            if self.portfolio[stock] == 0:
+                del self.portfolio[stock]
+            print(f"Sold {quantity} {stock} shares.")
+        else:
+            print(f"Not enough {stock} shares to sell.")
+
+    def decision(self, stock, day):
+        if self.get_price(stock, day) > self.get_price(stock, day - 1):
+            return "buy"
+        elif self.get_price(stock, day) < self.get_price(stock, day - 1):
+            return "sell"
+        return "hold"
+
+    def simulate_day(self, days=7):
+        for day in range(1, days):
+            print(f"\nDay {day}:")
+            for stock in self.stock_history:
+                action = self.decision(stock, day)
+                if action == "buy":
+                    self.buy(stock, 1, day)
+                elif action == "sell":
+                    self.sell(stock, 1, day)
+                time.sleep(1)
+            self.show_portfolio_value(day)
+
+    def show_portfolio_value(self, day):
+        total = self.balance
+        for stock, qty in self.portfolio.items():
+            total += self.get_price(stock, day) * qty
+        print(f"Portfolio value at the end of Day {day}: ${total:.2f}")
+
+advisor = StockInvestmentAdvisor()
+advisor.simulate_day()
+
